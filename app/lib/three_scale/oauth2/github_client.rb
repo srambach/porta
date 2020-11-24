@@ -49,7 +49,7 @@ module ThreeScale
       end
 
       def emails
-        access_token.options[:mode] = :query
+        access_token.options[:mode] = :header
         @emails ||= access_token.get('user/emails', :headers => { 'Accept' => 'application/vnd.github.v3' }).parsed
       end
     end
