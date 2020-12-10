@@ -25,28 +25,6 @@ class Api::ServicesControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
     end
 
-    test 'settings with finance allowed' do
-      Account.any_instance.stubs(:provider_can_use?).returns(true)
-      Account.any_instance.stubs(:provider_can_use?).with(:api_as_product).returns(false | true)
-      rolling_update(:api_as_product, enabled: false)
-
-      provider.settings.finance.allow
-
-      get settings_admin_service_path(service)
-
-      assert_select "input[name='service[buyer_plan_change_permission]'][value=credit_card]"
-      assert_select "input[name='service[buyer_plan_change_permission]'][value=request_credit_card]"
-    end
-
-    test 'settings with finance denied' do
-      provider.settings.finance.deny
-
-      get settings_admin_service_path(service)
-
-      assert_select "input[name='service[buyer_plan_change_permission]'][value=credit_card]", false
-      assert_select "input[name='service[buyer_plan_change_permission]'][value=request_credit_card]", false
-    end
-
     test 'settings with finance globally denied' do
       provider = master_account
       provider.settings.stubs(globally_denied_switches: [:finance])
@@ -61,13 +39,12 @@ class Api::ServicesControllerTest < ActionDispatch::IntegrationTest
 
     test 'settings renders the right template and contains the right sections' do
       Account.any_instance.stubs(:provider_can_use?).returns(true)
-      rolling_update(:api_as_product, enabled: false)
 
       get settings_admin_service_path(service)
       assert_response :success
       page = Nokogiri::HTML::Document.parse(response.body)
 
-      assert_template 'api/services/settings'
+      assert_template 'api/services/settings_apiap'
       section_titles = page.xpath("//fieldset[@class='inputs']/legend").text
       ['Signup & Use', 'Application Plans', 'Application Plan Changing','Alerts'].each do |expected_title|
         section_titles.include? expected_title
