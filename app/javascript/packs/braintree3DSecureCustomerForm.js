@@ -6,6 +6,15 @@ const form = document.querySelector('#customer_form')
 const clientToken = form.dataset.clientToken
 const braintreeNonce = document.querySelector('#braintree_nonce')
 
+const billingAdressInfo = {
+  company: document.querySelector('#customer_credit_card_billing_address_company').value,
+  streetAddress: document.querySelector('#customer_credit_card_billing_address_street_address').value,
+  postalCode: document.querySelector('#customer_credit_card_billing_address_postal_code').value,
+  locality: document.querySelector('#customer_credit_card_billing_address_locality').value,
+  region: document.querySelector('#customer_credit_card_billing_address_region').value,
+  countryCodeAlpha2: document.querySelector('#customer_credit_card_billing_address_country_name').value
+}
+
 const hostedFieldOptions = {
   styles: {
     'input': {
@@ -34,17 +43,46 @@ const hostedFieldOptions = {
   }
 }
 
+const threeDSecureParameters = {
+  amount: '500.00',
+  email: 'test@example.com',
+  billingAddress: billingAdressInfo,
+  onLookupComplete: function (data, next) {
+    // use `data` here, then call `next()`
+    console.log('---->>>', data)
+    next()
+  }
+}
+
+const veryfyCard = (threeDSecureInstance, payload) => {
+  const options = {
+    nonce: payload.nonce,
+    bin: payload.details.bin,
+    ...threeDSecureParameters
+  }
+  threeDSecureInstance.verifyCard(options, function (err, response) {
+    if (err) {
+      console.error(err)
+      return
+    }
+    // Send response.nonce to your server for use in your integration
+    // The 3D Secure Authentication ID can be found
+    //  at response.threeDSecureInfo.threeDSecureAuthenticationId
+    braintreeNonce.value = response.nonce
+    form.submit()
+  })
+}
+
 const create3DSecure = (clientInstance, payload) => {
   threeDSecure.create({
     version: 2,
     client: clientInstance
-  }, function (threeDSecureErr, threeDSecure) {
+  }, function (threeDSecureErr, threeDSecureInstance) {
     if (threeDSecureErr) {
       console.log('Error creating 3DSecure' + threeDSecureErr)
       return
     }
-    braintreeNonce.value = payload['nonce']
-    form.submit()
+    veryfyCard(threeDSecureInstance, payload)
   })
 }
 
