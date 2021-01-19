@@ -152,10 +152,67 @@ class PaymentTransaction < ApplicationRecord
     gateway.cim_gateway.get_customer_profile(:customer_profile_id => credit_card_auth_code)
   end
 
+  # TODO: Move all methods below to another class
+
+  delegate :latest_pending_payment_intent, to: :invoice, allow_nil: true
+
   def purchase_with_stripe(credit_card_auth_code, gateway, gateway_options)
     options = gateway_options.merge(customer: credit_card_auth_code)
     payment_method_id = options.delete(:payment_method_id)
-    gateway.purchase(amount.cents, payment_method_id, options)
+
+    if (payment_intent = latest_pending_payment_intent)
+      confirm_payment_intent_with_stripe(gateway, payment_method_id, payment_intent, options)
+    else
+      create_payment_intent_with_stripe(gateway, payment_method_id, amount, options)
+    end
   end
 
+  def create_payment_intent_with_stripe(gateway, payment_method_id, amount, options)
+    response = gateway.purchase(amount.cents, payment_method_id, options)
+
+    ensure_stripe_payment_intent(response) do |payment_intent_data|
+      next unless invoice
+      payment_intent = invoice.payment_intents.create!(payment_intent_id: payment_intent_data['id'], state: payment_intent_data['status'])
+
+      # Tries to confirm the payment intent according to status, but still returns the response of the create attempt
+      #
+      # PaymentIntent return statuses:
+      # - succeeded                => no additional action > payment has succeeded
+      # - requires_confirmation    => confirm the payment intent
+      # - requires_action          => check `payment_intent_data['next_action']` for instructions
+      # - requires_payment_method  => do not retry > payment attempt has failed > ask cardholder to replace card data
+      # Source: https://stripe.com/docs/payments/accept-a-payment-synchronously
+      confirm_payment_intent_with_stripe(gateway, payment_method_id, payment_intent, options) if payment_intent.state == 'requires_confirmation'
+    end
+  end
+
+  def confirm_payment_intent_with_stripe(gateway, payment_method_id, payment_intent, options)
+    # `off_session: false` is probably NOT the right Stripe flow for us, but it provokes a `requires_action` response where otherwise it would be `requires_payment_method`
+    # With `requires_action`, we can then use: params.dig('next_action', 'use_stripe_sdk', 'stripe_js')
+    response = gateway.confirm_intent(payment_intent.payment_intent_id, payment_method_id, options.merge(off_session: false))
+
+    ensure_stripe_payment_intent(response) do |payment_intent_data|
+      payment_intent_status = payment_intent_data['status']
+      payment_intent.update!(state: payment_intent_status)
+
+      next if payment_intent_status == 'succeeded'
+
+      # Because Stripe won't wrap the response into an 'error' thus making ActiveMerchant to think it's a success.
+      # See https://github.com/activemerchant/active_merchant/blob/b2f5e89eb383429d47e446f248d7bfe4f95ac3d0/lib/active_merchant/billing/gateways/stripe.rb#L690
+      response.instance_variable_set(:@success, false)
+      response.instance_variable_set(:@message, payment_intent_status.humanize)
+    end
+  end
+
+  def ensure_stripe_payment_intent(response)
+    payment_intent_data = extract_stripe_payment_intent_data(response)
+    yield(payment_intent_data) if payment_intent_data.present?
+    response
+  end
+
+  def extract_stripe_payment_intent_data(response)
+    response_params = response.params
+    return response_params if response.success?
+    response_params.dig('error', 'payment_intent')
+  end
 end
