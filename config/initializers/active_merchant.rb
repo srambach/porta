@@ -27,3 +27,5 @@ ActiveMerchant::Billing::StripeGateway.prepend(Module.new do
     headers
   end
 end)
+
+Stripe.logger = Rails.logger
