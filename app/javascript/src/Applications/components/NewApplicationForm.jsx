@@ -18,6 +18,8 @@ import {
 } from '@patternfly/react-core'
 import { CSRFToken } from 'utilities/utils'
 
+import 'Applications/styles/applications.scss'
+
 const buyers = [
   {disabled: true, id: 'foo', name: 'Select an Account'},
   {disabled: false, id: '0', name: 'Account 0'},
@@ -145,8 +147,6 @@ const NewApplicationForm = (props: Props) => {
           validated="default"
           fieldId="cinstance_plan_id"
         >
-          {/* TODO Check why the background color of the text field is not gray when disabled */}
-          {/* the input is getting white background color and overriding the gray disabled on the toggle div */}
           <Select
             id="cinstance_plan_id"
             name="cinstance[plan_id]"
