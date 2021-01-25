@@ -11,7 +11,10 @@ import {
   ActionGroup,
   Button,
   PageSection,
-  PageSectionVariants
+  PageSectionVariants,
+  Select,
+  SelectOption,
+  SelectVariant
 } from '@patternfly/react-core'
 import { CSRFToken } from 'utilities/utils'
 
@@ -66,6 +69,10 @@ const DEFAULT_APP_PLAN = { disabled: true, id: 'foo', name: 'Select an Applicati
 
 function toFormSelectOption (p: { disabled?: boolean, name: string, id: number }) {
   return <FormSelectOption isDisabled={p.disabled} key={p.id} value={p.id} label={p.name} />
+}
+
+function toSelectOption (p: { disabled?: boolean, name: string, id: number }) {
+  return <SelectOption isDisabled={p.disabled} key={p.id} index={p.id} value={p.name} />
 }
 
 const NewApplicationForm = (props: Props) => {
@@ -138,15 +145,25 @@ const NewApplicationForm = (props: Props) => {
           validated="default"
           fieldId="cinstance_plan_id"
         >
-          <FormSelect
-            isDisabled={product === DEFAULT_PRODUCT || !availablePlans.length}
-            value={plan.id}
-            onChange={(id) => setPlan(applicationPlans.find(p => p.id === Number(id)))}
+          {/* TODO Check why the background color of the text field is not gray when disabled */}
+          {/* the input is getting white background color and overriding the gray disabled on the toggle div */}
+          <Select
             id="cinstance_plan_id"
             name="cinstance[plan_id]"
+            isDisabled={product === DEFAULT_PRODUCT || !availablePlans.length}
+            variant={SelectVariant.typeahead}
+            typeAheadAriaLabel='aria label'
+            // onToggle={onToggle} TODO: Need to toggle the select dropdown
+            onSelect={(name) => setPlan(name)}
+            // onClear={clearSelection}
+            selections={plan.name}
+            isOpen={true}
+            aria-label="Select an application plan"
           >
-            {[DEFAULT_APP_PLAN, ...availablePlans].map(toFormSelectOption)}
-          </FormSelect>
+            {/* TODO: this isn't creating any options */}
+            {[DEFAULT_APP_PLAN, ...availablePlans].map(toSelectOption)}
+          </Select>
+
           {product !== DEFAULT_PRODUCT && !availablePlans.length && (
             <Button component="a" href={createApplicationPlanPath.replace(':id', product.id)} variant="link">
               Create your first application plan.
