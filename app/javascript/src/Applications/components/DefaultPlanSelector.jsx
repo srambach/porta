@@ -1,10 +1,13 @@
 // @flow
 
 import React
-// {useState }
   from 'react'
 
 import {
+  Form,
+  FormGroup,
+  PageSection,
+  PageSectionVariants,
   Select,
   SelectOption,
   SelectVariant
@@ -12,48 +15,56 @@ import {
 
 import 'Applications/styles/applications.scss'
 
-// const servicePlans = [
-//   {disabled: true, id: 'foo', name: 'Select an Application plan'},
-//   {disabled: false, id: '0', name: 'Service plan 0'},
-//   {disabled: false, id: '1', name: 'Service plan 1'}
-// ]
-
-// type ServicePlan = {
-//   id: number,
-//   name: string,
-//   default: boolean
-// }
-
 type Props = {}
 
-// const DEFAULT_PRODUCT = { disabled: true, id: 'foo', name: 'Select a Product' }
-// const DEFAULT_APP_PLAN = { disabled: true, id: 'foo', name: 'Select an Application Plan' }
+// TODO: options will need to be sorted alphabetically
+const options = [
+  { value: '(Select none)', disabled: false, isPlaceholder: true },
+  { value: 'Application plan A', disabled: false },
+  { value: 'Application plan B', disabled: false },
+  { value: 'Some other application plan A', disabled: false },
+  { value: 'Yet another application plan', disabled: false }
+]
+const isExpanded = false
+const isDisabled = false
 
-// function toFormSelectOption (p: { disabled?: boolean, name: string, id: number }) {
-//   return <FormSelectOption isDisabled={p.disabled} key={p.id} value={p.id} label={p.name} />
-// }
-
-// function toSelectOption (p: { disabled?: boolean, name: string, id: number }) {
-//   return <SelectOption isDisabled={p.disabled} key={p.id} index={p.id} value={p.name} />
-// }
+// TODO: onToggle, onSelect, and onClear will need to be implemented
 
 const DefaultPlanSelector = (props: Props) => {
-  console.log(props)
-  console.time('render DefaultPlanSelector')
-  // const { buyerId, createApplicationPath, servicePlansAllowed, products, applicationPlans, createApplicationPlanPath } = props
-
-  // const [plan, setPlan] = useState(DEFAULT_APP_PLAN)
-
-  // const availablePlans = applicationPlans.filter(p => p.issuer_id === product.id)
-
-  console.timeEnd('render DefaultPlanSelector')
   return (
-    <div>
-      adding a typeahead selector here
-      <Select variant={SelectVariant.typeahead}>
-        <SelectOption>this</SelectOption>
-      </Select>
-    </div>
+    <>
+      <PageSection variant={PageSectionVariants.light} className="pf-u-mb-md">
+        <Form>
+          <FormGroup
+            label="Default plan"
+            // isRequired
+            validated="default"
+            fieldId="cinstance_plan_id"
+            helperText="Default application plan (if any) is selected automatically upon service subscription."
+          >
+            <Select
+              variant={SelectVariant.typeahead}
+              aria-label = "Select application plan"
+              placeholderText="Select application plan"
+              onToggle = {() => {}}
+              onSelect = {() => {}}
+              onClear = {() => {}}
+              isExpanded = {isExpanded}
+              isDisabled = {isDisabled}
+            >
+              {options.map((option, index) => (
+                <SelectOption
+                  isDisabled={option.disabled}
+                  key={index}
+                  value={option.value}
+                  isPlaceholder={option.isPlaceholder}
+                />
+              ))}
+            </Select>
+          </FormGroup>
+        </Form>
+      </PageSection>
+    </>
   )
 }
 
