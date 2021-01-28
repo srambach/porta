@@ -9,16 +9,16 @@ import {
 } from '@patternfly/react-core'
 
 interface Record {
-  id: string,
+  id: string | number,
   name: string
 }
 
 type Props = Record & {
-  disabled?: boolean
+  disabled?: boolean | void
 }
 
 export const toFormSelectOption = ({ id, name, disabled = false }: Props) => (
-  <FormSelectOption isDisabled={disabled} key={id} value={id} label={name} />
+  <FormSelectOption isDisabled={disabled} key={String(id)} value={String(id)} label={name} />
 )
 
 class SelectOptionObject implements ISelectOptionObject {
@@ -26,7 +26,7 @@ class SelectOptionObject implements ISelectOptionObject {
   name: string;
 
   constructor (item: Record) {
-    this.id = item.id
+    this.id = String(item.id)
     this.name = item.name
   }
 
