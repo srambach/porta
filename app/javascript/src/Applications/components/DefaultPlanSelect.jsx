@@ -13,9 +13,10 @@ import {
   SelectVariant
 } from '@patternfly/react-core'
 import { PlanSelectOptionObject } from 'Applications'
+import { MySpinner } from 'Applications'
 
 import './DefaultPlanSelect.scss'
-
+import '../../patternflyStyles/spinner.scss'
 type Service = {
   id: number,
   name: string,
@@ -91,6 +92,9 @@ const DefaultPlanSelect = ({ currentService, currentPlan = NO_DEFAULT_PLAN, plan
           fieldId="application_plan_id"
           helperText="Default application plan (if any) is selected automatically upon service subscription."
         >
+
+          <MySpinner size='sm' className='pf-u-ml-md' />
+
           <Select
             variant={SelectVariant.typeahead}
             aria-label="Select application plan"
