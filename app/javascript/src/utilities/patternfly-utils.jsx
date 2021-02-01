@@ -10,11 +10,14 @@ import {
 
 interface Record {
   id: string,
-  name: string
+  name: string,
+  systemName: string
 }
 
 type Props = Record & {
-  disabled?: boolean
+  disabled?: boolean,
+  className?: string,
+  description?: string
 }
 
 export const toFormSelectOption = ({ id, name, disabled = false }: Props) => (
@@ -24,14 +27,16 @@ export const toFormSelectOption = ({ id, name, disabled = false }: Props) => (
 class SelectOptionObject implements ISelectOptionObject {
   id: string;
   name: string;
+  systemName: string;
 
   constructor (item: Record) {
     this.id = item.id
     this.name = item.name
+    this.systemName = item.systemName
   }
 
   toString (): string {
-    return this.name
+    return `${this.name} (${this.systemName})`
   }
 
   compareTo (other: Record): boolean {
@@ -39,10 +44,12 @@ class SelectOptionObject implements ISelectOptionObject {
   }
 }
 
-export const toSelectOption = ({ id, name, disabled = false }: Props) => (
+export const toSelectOption = ({ id, name, systemName, disabled = false, className, description }: Props) => (
   <SelectOption
     key={id}
-    value={new SelectOptionObject({ id, name })}
+    value={new SelectOptionObject({ id, name, systemName })}
     isDisabled={disabled}
+    className={className}
+    description={description}
   />
 )
