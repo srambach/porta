@@ -27,7 +27,7 @@ export const toFormSelectOption = ({ id, name, disabled = false }: Props) => (
 class SelectOptionObject implements ISelectOptionObject {
   id: string;
   name: string;
-  systemName: string;
+  systemName: string; // TODO: use SelectOption's description instead when PF package is up-to-date
 
   constructor (item: Record) {
     this.id = String(item.id)
@@ -36,7 +36,7 @@ class SelectOptionObject implements ISelectOptionObject {
   }
 
   toString (): string {
-    return `${this.name} (${this.systemName})`
+    return this.systemName ? `${this.name} (${this.systemName})` : this.name
   }
 
   compareTo (other: Record): boolean {
