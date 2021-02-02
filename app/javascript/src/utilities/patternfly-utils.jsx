@@ -3,7 +3,6 @@
 import React from 'react'
 
 import {
-  FormSelectOption,
   SelectOption,
   SelectOptionObject as ISelectOptionObject
 } from '@patternfly/react-core'
@@ -19,10 +18,6 @@ type Props = Record & {
   className?: string,
   description?: string
 }
-
-export const toFormSelectOption = ({ id, name, disabled = false }: Props) => (
-  <FormSelectOption isDisabled={disabled} key={String(id)} value={String(id)} label={name} />
-)
 
 export class SelectOptionObject implements ISelectOptionObject {
   id: string;
