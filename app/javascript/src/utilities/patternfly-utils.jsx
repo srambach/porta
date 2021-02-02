@@ -9,7 +9,7 @@ import {
 } from '@patternfly/react-core'
 
 interface Record {
-  id: string,
+  id: string | number,
   name: string,
   systemName: string
 }
@@ -24,7 +24,7 @@ export const toFormSelectOption = ({ id, name, disabled = false }: Props) => (
   <FormSelectOption isDisabled={disabled} key={String(id)} value={String(id)} label={name} />
 )
 
-class SelectOptionObject implements ISelectOptionObject {
+export class SelectOptionObject implements ISelectOptionObject {
   id: string;
   name: string;
   systemName: string; // TODO: use SelectOption's description instead when PF package is up-to-date
