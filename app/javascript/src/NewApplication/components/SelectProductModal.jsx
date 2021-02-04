@@ -64,9 +64,9 @@ const SelectProductModal = ({ isOpen, products, onSelectProduct, onClose }: Prop
         <Button key='cancel' variant='secondary' onClick={onClose}>Cancel</Button>
       ]}
     >
-      {/* Toolbar is a component in the css, but a layout in react, so the class names are mismatched (pf-c-toolbar vs pf-l-toolbar) Styling doesn't work, but if you change it to pf-c in the inspector, it works */}
+      {/* Toolbar is a component in the css, but a layout in react, so the class names are mismatched (pf-c-toolbar vs pf-l-toolbar) Adding the component class name manually so it will get the styles */}
       <Toolbar className="pf-c-toolbar pf-u-justify-content-space-between">
-        <ToolbarItem>
+        <ToolbarItem className="pf-c-toolbar__item">
           <InputGroup>
             <TextInput name="searchInput" id="searchInput" type="search" aria-label="search for a product" />
             <Button variant="control" aria-label="search button for search input">
@@ -74,7 +74,7 @@ const SelectProductModal = ({ isOpen, products, onSelectProduct, onClose }: Prop
             </Button>
           </InputGroup>
         </ToolbarItem>
-        <ToolbarItem>
+        <ToolbarItem className="pf-c-toolbar__item">
           {pagination}
         </ToolbarItem>
       </Toolbar>
