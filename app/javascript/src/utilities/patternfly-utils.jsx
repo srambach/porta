@@ -10,7 +10,7 @@ import {
 interface Record {
   id: string | number,
   name: string,
-  systemName: string
+  description: string | void
 }
 
 type Props = Record & {
@@ -22,16 +22,16 @@ type Props = Record & {
 export class SelectOptionObject implements ISelectOptionObject {
   id: string;
   name: string;
-  systemName: string; // TODO: use SelectOption's description instead when PF package is up-to-date
+  description: string | void; // TODO: use SelectOption's description instead when PF package is up-to-date
 
   constructor (item: Record) {
     this.id = String(item.id)
     this.name = item.name
-    this.systemName = item.systemName
+    this.description = item.description
   }
 
   toString (): string {
-    return this.systemName ? `${this.name} (${this.systemName})` : this.name
+    return this.description ? `${this.name} (${this.description})` : this.name
   }
 
   compareTo (other: Record): boolean {
@@ -39,10 +39,10 @@ export class SelectOptionObject implements ISelectOptionObject {
   }
 }
 
-export const toSelectOption = ({ id, name, systemName, disabled = false, className, description }: Props) => (
+export const toSelectOption = ({ id, name, description, disabled = false, className }: Props) => (
   <SelectOption
     key={id}
-    value={new SelectOptionObject({ id, name, systemName })}
+    value={new SelectOptionObject({ id, name, description })}
     isDisabled={disabled}
     className={className}
     description={description}
