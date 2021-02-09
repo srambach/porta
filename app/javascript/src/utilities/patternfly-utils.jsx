@@ -7,31 +7,26 @@ import {
   SelectOptionObject as ISelectOptionObject
 } from '@patternfly/react-core'
 
-interface Record {
-  id: string | number,
-  name: string,
-  description: string | void
+export interface Record {
+  id: string,
+  name: string
 }
 
 type Props = Record & {
-  disabled?: boolean,
-  className?: string,
-  description?: string
+  disabled?: boolean | void
 }
 
 export class SelectOptionObject implements ISelectOptionObject {
   id: string;
   name: string;
-  description: string | void; // TODO: use SelectOption's description instead when PF package is up-to-date
 
   constructor (item: Record) {
     this.id = String(item.id)
     this.name = item.name
-    this.description = item.description
   }
 
   toString (): string {
-    return this.description ? `${this.name} (${this.description})` : this.name
+    return this.name
   }
 
   compareTo (other: Record): boolean {
@@ -39,12 +34,10 @@ export class SelectOptionObject implements ISelectOptionObject {
   }
 }
 
-export const toSelectOption = ({ id, name, description, disabled = false, className }: Props) => (
+export const toSelectOption = ({ id, name, disabled = false }: Props) => (
   <SelectOption
     key={id}
-    value={new SelectOptionObject({ id, name, description })}
+    value={new SelectOptionObject({ id, name })}
     isDisabled={disabled}
-    className={className}
-    description={description}
   />
 )
