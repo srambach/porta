@@ -165,18 +165,3 @@ form.formtastic .button-bar, .button-bar {
   height: line-height-times(5/4);
 }
 
-/****** HACK ******/
-// This fixes missing PF4
-.Main {
-  ul#subsubmenu ~ .pf-c-button.pf-c-button__in-title {
-    position: absolute;
-    top: 4.8rem;
-    right: 1.5rem;
-  }
-  .pf-c-button.pf-c-button__in-title {
-    position: absolute;
-    top: 1.8rem;
-    right: 1.5rem;
-  }
-}
-/****** END OF HACK ******/

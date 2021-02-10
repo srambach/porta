@@ -46,3 +46,11 @@ body {
     box-shadow: $whiteBoxShadowIE11;
   }
 }
+
+/* HACK: This added style fixes extra space caused by Main having unnecessary padding when used with a page section.*/
+.page-section--full-width {
+  margin-top: -1.5rem;
+  margin-right: -1.5rem;
+  margin-left: -1.5rem;
+}
+/****** END OF HACK ******/
